@@ -568,7 +568,15 @@ fn artifact_targets_to_unit_deps(
                     TargetKind::Lib(kinds) => Box::new(
                         kinds
                             .iter()
-                            .filter(|tk| matches!(tk, CrateType::Cdylib | CrateType::Staticlib))
+                            .filter(|tk| {
+                                let artifact_kind: &&CrateType = &&dep
+                                    .artifact()
+                                    .expect("should be artifact dependency")
+                                    .kinds()[0]
+                                    .into();
+
+                                tk == artifact_kind
+                            })
                             .map(|target_kind| {
                                 new_unit_dep(
                                     state,
