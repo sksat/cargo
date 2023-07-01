@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::core::dependency::ArtifactKind;
+
 /// Types of the output artifact that the compiler emits.
 /// Usually distributable or linkable either statically or dynamically.
 ///
@@ -111,5 +113,15 @@ impl serde::Serialize for CrateType {
         S: serde::ser::Serializer,
     {
         self.to_string().serialize(s)
+    }
+}
+
+impl From<ArtifactKind> for CrateType {
+    fn from(kind: ArtifactKind) -> Self {
+        match kind {
+            ArtifactKind::AllBinaries | ArtifactKind::SelectedBinary(_) => CrateType::Bin,
+            ArtifactKind::Cdylib => CrateType::Cdylib,
+            ArtifactKind::Staticlib => CrateType::Staticlib,
+        }
     }
 }
